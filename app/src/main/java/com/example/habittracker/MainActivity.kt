@@ -1,7 +1,6 @@
 package com.example.habittracker
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -14,11 +13,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.rememberNavController
-import com.example.habittracker.ui.theme.HabitTrackerTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.habittracker.data.db.AppDatabase
+import com.example.habittracker.data.repository.HabitRepository
 import com.example.habittracker.ui.add_edit_habit.AddEditHabitScreen
+import com.example.habittracker.ui.theme.HabitTrackerTheme
+import com.example.habittracker.util.ViewModelFactory
 
 object Routes{
     const val HABIT_LIST = "habit_list"
@@ -29,6 +31,9 @@ object Routes{
 class MainActivity: ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val database = AppDatabase.getDatabase(application)
+        val repository = HabitRepository(database.habitDao())
+        val factory = ViewModelFactory(repository)
         enableEdgeToEdge()
         setContent {
             HabitTrackerTheme {
@@ -40,10 +45,10 @@ class MainActivity: ComponentActivity(){
                         modifier = Modifier.padding(innerPadding)
                     ){
                         composable(Routes.HABIT_LIST){
-                            HabitListScreen(navController = navController)
+                            HabitListScreen(navController = navController, factory = factory)
                         }
                         composable(Routes.ADD_EDIT_HABIT){
-                            AddEditHabitScreen(navController = navController)
+                            AddEditHabitScreen(navController = navController, factory = factory)
                         }
                         composable(Routes.HABIT_DETAIL){
                             ScreenPlaceholder(name = "Habit Detail")

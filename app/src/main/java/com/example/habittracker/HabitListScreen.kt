@@ -12,21 +12,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel // Предполагаем использование Hilt
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.habittracker.Routes
 import com.example.habittracker.data.model.Habit
 import com.example.habittracker.ui.habit_list.HabitListViewModel
+import com.example.habittracker.util.ViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HabitListScreen(
     navController: NavController,
-    viewModel: HabitListViewModel = hiltViewModel() // ViewModel будет предоставлена через Hilt или фабрику
+    factory: ViewModelFactory
 ) {
+    val viewModel: HabitListViewModel = viewModel(factory = factory)
     val habitListItems by viewModel.habits.collectAsState()
 
     Scaffold(
@@ -50,6 +49,7 @@ fun HabitListScreen(
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
         ) {
+
             items(habitListItems) { item ->
                 HabitItem(
                     habit = item.habit,
