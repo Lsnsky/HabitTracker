@@ -21,7 +21,7 @@ data class HabitListItem(
 
 sealed class UiEvent{
     data class ShowSnackbar(val message: String): UiEvent()
-    data class NavigateTo(val route: String): UiEvent()
+    data class NavigateTo(val route: String?): UiEvent()
 }
 
 class HabitListViewModel(

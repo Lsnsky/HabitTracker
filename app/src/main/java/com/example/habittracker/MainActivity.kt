@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.habittracker.ui.theme.HabitTrackerTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.habittracker.ui.add_edit_habit.AddEditHabitScreen
 
 object Routes{
     const val HABIT_LIST = "habit_list"
@@ -39,10 +40,10 @@ class MainActivity: ComponentActivity(){
                         modifier = Modifier.padding(innerPadding)
                     ){
                         composable(Routes.HABIT_LIST){
-                            ScreenPlaceholder(name = "Habit List")
+                            HabitListScreen(navController = navController)
                         }
                         composable(Routes.ADD_EDIT_HABIT){
-                            ScreenPlaceholder(name = "Add/Edit Habit")
+                            AddEditHabitScreen(navController = navController)
                         }
                         composable(Routes.HABIT_DETAIL){
                             ScreenPlaceholder(name = "Habit Detail")
