@@ -18,7 +18,7 @@ import androidx.room.PrimaryKey
 data class HabitExecution(
         @PrimaryKey(autoGenerate = true)
         val id: Long = 0,
-        val habitId: Long,
+        val habitID: Long,
         val executionDate: Long,
         val isDone: Boolean
 )
