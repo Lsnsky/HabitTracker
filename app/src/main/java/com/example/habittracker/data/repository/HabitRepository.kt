@@ -1,5 +1,6 @@
 package com.example.habittracker.data.repository
 
+import com.example.habittracker.HabitWithExecutions
 import com.example.habittracker.data.db.HabitDao
 import com.example.habittracker.data.model.Habit
 import com.example.habittracker.data.model.HabitExecution
@@ -10,8 +11,8 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 class HabitRepository(private val habitDao: HabitDao) {
-    fun getAllHabits(): Flow<List<Habit>> {
-        return habitDao.getAllHabits()
+    fun getHabitsWithExecutions(): Flow<List<HabitWithExecutions>> {
+        return habitDao.getHabitsWithExecutions()
     }
     suspend fun insertHabit(habit: Habit): Long {
         return habitDao.insertHabit(habit)
@@ -95,7 +96,7 @@ class HabitRepository(private val habitDao: HabitDao) {
         return kotlinx.coroutines.flow.flowOf(0)
     }
     fun isHabitLimitExceeded():Flow<Boolean>{
-        return getAllHabits().map { habits ->
+        return getHabitsWithExecutions().map { habits ->
             habits.size >= 3
         }
     }
