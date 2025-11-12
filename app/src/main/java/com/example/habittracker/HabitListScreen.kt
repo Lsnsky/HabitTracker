@@ -79,8 +79,7 @@ fun HabitListScreen(
                     streak = item.currentStreak,
                     isDone = item.isDoneToday,
                     onHabitClick = {
-                        // TODO: Шаг 1.6 - Переход на экран деталей
-                        // navController.navigate("${Routes.HABIT_DETAIL}/${item.habit.id}")
+                         navController.navigate("${Routes.HABIT_DETAIL}/${item.habit.id}")
                     },
                     onCheckClick = {
                         viewModel.onEvent(HabitListEvent.OnHabitCheckChanged(item.habit))
@@ -117,7 +116,7 @@ fun HabitItem(
                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(
-                    text = "Стрик: $streak дней",
+                    text = "Streak: $streak days",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

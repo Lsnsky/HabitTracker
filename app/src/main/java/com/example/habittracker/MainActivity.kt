@@ -65,19 +65,3 @@ class MainActivity: ComponentActivity(){
         }
     }
 }
-
-@Composable
-fun ScreenPlaceholder(name: String, modifier: Modifier = Modifier){
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ){
-        Text(text = "Placeholder for ${name}")
-    }
-}
-
-@Preview
-@Composable
-fun ScreenPlaceholderPreview(){
-    ScreenPlaceholder(name = "Screen name")
-}
