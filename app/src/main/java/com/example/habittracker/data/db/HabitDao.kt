@@ -5,7 +5,9 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
+import com.example.habittracker.HabitWithExecutions
 import com.example.habittracker.data.model.Habit
 import com.example.habittracker.data.model.HabitExecution
 import kotlinx.coroutines.flow.Flow
@@ -20,9 +22,9 @@ interface HabitDao {
 
     @Delete
     suspend fun deleteHabit(habit: Habit)
-
+    @Transaction
     @Query("SELECT * FROM habits ORDER BY createdDate DESC")
-    fun getAllHabits(): Flow<List<Habit>>
+    fun getHabitsWithExecutions(): Flow<List<HabitWithExecutions>>
 
     @Query("SELECT * FROM habits WHERE Id = :habitId")
     suspend fun getHabitById(habitId: Long): Habit?
