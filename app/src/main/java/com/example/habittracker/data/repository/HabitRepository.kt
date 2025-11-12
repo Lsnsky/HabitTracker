@@ -45,6 +45,8 @@ class HabitRepository(private val habitDao: HabitDao) {
         var expectedDate = today
 
         val mostRecentExecutionDate = Instant.ofEpochMilli(executions.first().executionDate)
+            .atZone(ZoneId.systemDefault()).toLocalDate()
+
         if(mostRecentExecutionDate != today && mostRecentExecutionDate != today.minusDays(1)){
             return 0
         }
@@ -55,15 +57,36 @@ class HabitRepository(private val habitDao: HabitDao) {
             val executionDate = Instant.ofEpochMilli(execution.executionDate)
                 .atZone(ZoneId.systemDefault()).toLocalDate()
             if (executionDate.isEqual(expectedDate)) {
-                streak++
-                expectedDate = expectedDate.minusDays(1)
-            } else {
+                if(execution.isDone){
+                    streak++
+                    expectedDate = expectedDate.minusDays(1)
+                } else {
+                    break
+                }
+            }
+            else if(executionDate.isBefore(expectedDate)){
                 break
             }
         }
         return streak
     }
 
+    suspend fun toggleHabitExecution(habitId: Long, date: LocalDate) {
+        val dateTimestamp = date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val existingExecution = habitDao.getExecutionByDate(habitId, dateTimestamp)
+
+        if (existingExecution == null) {
+            val newExecution = HabitExecution(
+                habitID = habitId,
+                executionDate = dateTimestamp,
+                isDone = true
+            )
+            insertExecution(newExecution)
+        } else {
+            val updateExecution = existingExecution.copy(isDone = !existingExecution.isDone)
+            insertExecution(updateExecution)
+        }
+    }
 
     suspend fun deleteExecutionsForHabit(habitId: Long) {
         habitDao.deleteExecutionsForHabit(habitId)

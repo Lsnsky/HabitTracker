@@ -10,9 +10,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
 
+sealed interface HabitListEvent{
+    data class OnHabitCheckChanged(val habit: Habit)
+}
 data class HabitListItem(
     val habit: Habit,
     val isDoneToday: Boolean,
@@ -47,4 +51,21 @@ class HabitListViewModel(
         )
     private val _uiEvent = MutableSharedFlow<UiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
+
+    fun onEvent(event: HabitListEvent.OnHabitCheckChanged){
+        when(event){
+            is HabitListEvent.OnHabitCheckChanged -> {
+                viewModelScope.launch {
+                    repository.toggleHabitExecution(event.habit.id, LocalDate.now())
+
+                    val habitStatus = if(!event.habit.isDoneForToday(habits.value)) "done" else "cancelled"
+                    _uiEvent.emit(UiEvent.ShowSnackbar("Habit ${event.habit.name} has been $habitStatus"))
+                }
+            }
+        }
+    }
+}
+
+private fun Habit.isDoneForToday(items: List<HabitListItem>): Boolean{
+    return items.find { it.habit.id == id }?.isDoneToday ?: false
 }
