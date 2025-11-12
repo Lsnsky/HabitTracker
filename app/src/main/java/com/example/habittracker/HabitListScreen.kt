@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -69,8 +70,8 @@ fun HabitListScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp)
+                .padding(paddingValues),
+                contentPadding = PaddingValues(all = 8.dp)
         ) {
 
             items(items = habitListItems, key = { it.habit.id }) { item ->
@@ -85,6 +86,7 @@ fun HabitListScreen(
                         viewModel.onEvent(HabitListEvent.OnHabitCheckChanged(item.habit))
                     }
                 )
+                HorizontalDivider()
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
@@ -99,10 +101,11 @@ fun HabitItem(
     onHabitClick: () -> Unit,
     onCheckClick: () -> Unit
 ) {
-    Card(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onHabitClick() }
+            .padding(vertical = 12.dp)
     ) {
         Row(
             modifier = Modifier
@@ -117,13 +120,24 @@ fun HabitItem(
                 )
                 Text(
                     text = "Streak: $streak days",
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = androidx . compose . material3 . MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            Checkbox(
-                checked = isDone,
-                onCheckedChange = { onCheckClick() }
-            )
+            Box(
+                modifier = Modifier
+                    .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                    .clickable(
+                        role = androidx.compose.ui.semantics.Role.Checkbox,
+                        onClick = onCheckClick
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Checkbox(
+                    checked = isDone,
+                    onCheckedChange = null
+                )
+            }
         }
     }
 }
