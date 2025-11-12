@@ -13,12 +13,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.habittracker.data.db.AppDatabase
 import com.example.habittracker.data.repository.HabitRepository
 import com.example.habittracker.ui.add_edit_habit.AddEditHabitScreen
+import com.example.habittracker.ui.habit_list.HabitDetailScreen
 import com.example.habittracker.ui.theme.HabitTrackerTheme
 import com.example.habittracker.util.ViewModelFactory
 
@@ -50,8 +53,11 @@ class MainActivity: ComponentActivity(){
                         composable(Routes.ADD_EDIT_HABIT){
                             AddEditHabitScreen(navController = navController, factory = factory)
                         }
-                        composable(Routes.HABIT_DETAIL){
-                            ScreenPlaceholder(name = "Habit Detail")
+                        composable(
+                            route = Routes.HABIT_DETAIL + "/{habitId}",
+                            arguments = listOf(navArgument("habitId"){type = NavType.StringType})
+                        ){
+                            HabitDetailScreen(navController = navController, factory = factory)
                         }
                     }
                 }
