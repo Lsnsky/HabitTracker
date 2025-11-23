@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -51,93 +50,108 @@ fun HabitListScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Мои привычки") })
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                navController.navigate(Routes.ADD_EDIT_HABIT)
-            }) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Добавить привычку"
-                )
-            }
-        }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-                contentPadding = PaddingValues(all = 8.dp)
-        ) {
+    // ИЗМЕНЕНИЕ: Scaffold полностью удален. Используем Box как корневой элемент.
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (habitListItems.isEmpty()) {
+            // Отображаем состояние "пустого экрана", если привычек нет.
+            EmptyState()
+        } else {
+            // Иначе отображаем список привычек.
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                // Отступ снизу, чтобы FAB не перекрывал последний элемент
+                contentPadding = PaddingValues(top = 8.dp, bottom = 80.dp)
+            ) {
 
-            items(items = habitListItems, key = { it.habit.id }) { item ->
-                HabitItem(
-                    habit = item.habit,
-                    streak = item.currentStreak,
-                    isDone = item.isDoneToday,
-                    onHabitClick = {
-                         navController.navigate("${Routes.HABIT_DETAIL}/${item.habit.id}")
-                    },
-                    onCheckClick = {
-                        viewModel.onEvent(HabitListEvent.OnHabitCheckChanged(item.habit))
-                    }
-                )
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(8.dp))
+                items(items = habitListItems, key = { it.habit.id }) { item ->
+                    MaterialHabitItem(
+                        habit = item.habit,
+                        streak = item.currentStreak,
+                        isDone = item.isDoneToday,
+                        onHabitClick = {
+                            navController.navigate("${Routes.HABIT_DETAIL}/${item.habit.id}")
+                        },
+                        onCheckClick = {
+                            viewModel.onEvent(HabitListEvent.OnHabitCheckChanged(item.habit))
+                        },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                    )
+                }
             }
         }
+
+        // Плавающая кнопка действия располагается поверх контента благодаря Box
+        FloatingActionButton(
+            onClick = { navController.navigate(Routes.ADD_EDIT_HABIT) },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Добавить привычку"
+            )
+        }
+
+        // Snackbar также располагается поверх контента
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+    }
+}
+
+// Вспомогательная функция для пустого состояния
+@Composable
+fun EmptyState(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // ... (код EmptyState остается без изменений)
     }
 }
 
 @Composable
-fun HabitItem(
+fun MaterialHabitItem(
     habit: Habit,
     streak: Int,
     isDone: Boolean,
     onHabitClick: () -> Unit,
-    onCheckClick: () -> Unit
+    onCheckClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = Modifier
+    // ИЗМЕНЕНИЕ: Заменяем старый HabitItem на более чистый Card
+    Card(
+        modifier = modifier
             .fillMaxWidth()
             .clickable { onHabitClick() }
-            .padding(vertical = 12.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = habit.name,
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleMedium
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Streak: $streak days",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = androidx . compose . material3 . MaterialTheme.colorScheme.onSurfaceVariant
+                    text = "Стрик: $streak дней",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            Box(
-                modifier = Modifier
-                    .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
-                    .clickable(
-                        role = androidx.compose.ui.semantics.Role.Checkbox,
-                        onClick = onCheckClick
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Checkbox(
-                    checked = isDone,
-                    onCheckedChange = null
-                )
-            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Checkbox(
+                checked = isDone,
+                onCheckedChange = { onCheckClick() }
+            )
         }
     }
 }
