@@ -14,6 +14,7 @@ roomKtx = "2.8.3"
 navigationCompose = "2.9.6"
 mediationTestSuite = "3.0.0"
 room = "2.6.1"
+material3Android = "1.2.1"
 
 [libraries]
 androidx-activity-compose-v190 = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
@@ -38,7 +39,7 @@ mediation-test-suite = { group = "com.google.android.ads", name = "mediation-tes
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
-
+androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

@@ -89,6 +89,19 @@ class HabitRepository(private val habitDao: HabitDao) {
         }
     }
 
+    suspend fun skipHabitExecution(habitId: Long, date: LocalDate) {
+        val dateTimestamp = date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val existingExecution = habitDao.getExecutionByDate(habitId, dateTimestamp)
+
+        // Мы создаем или обновляем запись, устанавливая isDone в false
+        val executionToInsert = existingExecution?.copy(isDone = false) ?: HabitExecution(
+            habitID = habitId,
+            executionDate = dateTimestamp,
+            isDone = false
+        )
+        insertExecution(executionToInsert)
+    }
+
     suspend fun deleteExecutionsForHabit(habitId: Long) {
         habitDao.deleteExecutionsForHabit(habitId)
     }
